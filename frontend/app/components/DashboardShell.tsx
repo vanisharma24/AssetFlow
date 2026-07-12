@@ -221,9 +221,13 @@ export default function DashboardShell() {
     }
 
     try {
+      const token = localStorage.getItem('assetflow_token')
       const res = await fetch(`${API_BASE}/api/allocations/${allocationId}/return`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({ returnConditionNotes: notes })
       })
 
@@ -250,9 +254,13 @@ export default function DashboardShell() {
     if (!confirm('Are you sure you want to approve this transfer request?')) return
 
     try {
+      const token = localStorage.getItem('assetflow_token')
       const res = await fetch(`${API_BASE}/api/transfers/${transferId}/approve`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({ approvedBy: currentUser.id })
       })
 
@@ -274,8 +282,12 @@ export default function DashboardShell() {
     if (!confirm('Are you sure you want to cancel this booking?')) return
 
     try {
+      const token = localStorage.getItem('assetflow_token')
       const res = await fetch(`${API_BASE}/api/bookings/${bookingId}/cancel`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       })
 
       if (res.ok) {
@@ -291,13 +303,43 @@ export default function DashboardShell() {
     }
   }
 
+  // Handle Approve Maintenance
+  const handleApproveMaintenance = async (reqId: string) => {
+    if (!confirm('Are you sure you want to approve this maintenance request? This will mark the asset as Under Maintenance.')) return
+
+    try {
+      const token = localStorage.getItem('assetflow_token')
+      const res = await fetch(`${API_BASE}/api/maintenances/${reqId}/approve`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      if (res.ok) {
+        alert('Maintenance approved successfully!')
+        loadKpis()
+        fetchMaintenances()
+      } else {
+        const err = await res.json()
+        alert(`Failed to approve maintenance: ${err.error}`)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   // Handle Resolve Maintenance
   const handleResolveMaintenance = async (reqId: string) => {
     if (!confirm('Are you sure you want to mark this maintenance request as resolved?')) return
 
     try {
+      const token = localStorage.getItem('assetflow_token')
       const res = await fetch(`${API_BASE}/api/maintenances/${reqId}/resolve`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       })
 
       if (res.ok) {
@@ -307,6 +349,31 @@ export default function DashboardShell() {
       } else {
         const err = await res.json()
         alert(`Failed to resolve maintenance: ${err.error}`)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // Handle Update Employee (Promotions, Departments, Status)
+  const handleUpdateEmployee = async (employeeId: string, fields: { name?: string; role?: string; departmentId?: string; status?: string }) => {
+    try {
+      const token = localStorage.getItem('assetflow_token')
+      const res = await fetch(`${API_BASE}/api/employees/${employeeId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(fields)
+      })
+
+      if (res.ok) {
+        alert('Employee updated successfully!')
+        fetchOrgData()
+      } else {
+        const err = await res.json()
+        alert(`Failed to update employee: ${err.error}`)
       }
     } catch (e) {
       console.error(e)
@@ -504,13 +571,20 @@ export default function DashboardShell() {
 
             {/* Quick Actions Panel */}
             <div className="grid gap-3 sm:grid-cols-3">
-              <button
-                onClick={() => setIsRegisterOpen(true)}
-                className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/5 px-4 py-3 text-sm font-semibold text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500 transition shadow-[0_0_10px_rgba(16,185,129,0.02)]"
-              >
-                <Plus className="h-4 w-4" />
-                + register asset
-              </button>
+              {currentUser?.role === 'Admin' || currentUser?.role === 'AssetManager' ? (
+                <button
+                  onClick={() => setIsRegisterOpen(true)}
+                  className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/5 px-4 py-3 text-sm font-semibold text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500 transition shadow-[0_0_10px_rgba(16,185,129,0.02)]"
+                >
+                  <Plus className="h-4 w-4" />
+                  + register asset
+                </button>
+              ) : (
+                <div className="flex items-center justify-center gap-2 rounded-xl border border-slate-900 bg-slate-950/20 px-4 py-3 text-sm font-semibold text-slate-600 cursor-not-allowed select-none">
+                  <Plus className="h-4 w-4 text-slate-700" />
+                  + register asset (Managers only)
+                </div>
+              )}
               <button
                 onClick={() => setIsBookOpen(true)}
                 className="flex items-center justify-center gap-2 rounded-xl border border-cyan-500/40 bg-cyan-500/5 px-4 py-3 text-sm font-semibold text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500 transition"
@@ -884,16 +958,28 @@ export default function DashboardShell() {
                             {req.status}
                           </span>
                         </td>
-                        <td className="p-4 text-right">
-                          {req.status !== 'Resolved' ? (
+                        <td className="p-4 text-right space-x-2">
+                          {req.status === 'Pending' && (currentUser?.role === 'Admin' || currentUser?.role === 'AssetManager') && (
+                            <button
+                              onClick={() => handleApproveMaintenance(req.id)}
+                              className="text-xs font-semibold bg-blue-500 text-white px-2.5 py-1.5 rounded-lg hover:bg-blue-400 transition"
+                            >
+                              Approve
+                            </button>
+                          )}
+                          {req.status === 'Approved' && (currentUser?.role === 'Admin' || currentUser?.role === 'AssetManager') && (
                             <button
                               onClick={() => handleResolveMaintenance(req.id)}
-                              className="text-xs font-semibold bg-emerald-500 text-[#09090b] px-3 py-1.5 rounded-lg hover:bg-emerald-400 transition"
+                              className="text-xs font-semibold bg-emerald-500 text-[#09090b] px-2.5 py-1.5 rounded-lg hover:bg-emerald-400 transition"
                             >
                               Resolve
                             </button>
-                          ) : (
-                            <span className="text-xs text-slate-600">-</span>
+                          )}
+                          {req.status === 'Resolved' && (
+                            <span className="text-xs text-slate-500">Resolved</span>
+                          )}
+                          {req.status !== 'Resolved' && !(currentUser?.role === 'Admin' || currentUser?.role === 'AssetManager') && (
+                            <span className="text-xs text-slate-500">Waiting for approval</span>
                           )}
                         </td>
                       </tr>
@@ -946,20 +1032,64 @@ export default function DashboardShell() {
                         <th className="p-4">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-900/60">
-                      {employees.map(emp => (
-                        <tr key={emp.id} className="hover:bg-slate-900/20 text-slate-300">
-                          <td className="p-4 text-white font-medium">{emp.name}</td>
-                          <td className="p-4 text-slate-400">{emp.email}</td>
-                          <td className="p-4">{emp.department?.name || 'N/A'}</td>
-                          <td className="p-4 text-slate-400">{emp.role}</td>
-                          <td className="p-4">
-                            <span className="inline-flex items-center rounded-full bg-emerald-500/5 px-2 py-0.5 text-xs font-medium text-emerald-400 border border-emerald-500/20">
-                              {emp.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                     <tbody className="divide-y divide-slate-900/60">
+                      {employees.map(emp => {
+                        const isAdmin = currentUser?.role === 'Admin'
+                        return (
+                          <tr key={emp.id} className="hover:bg-slate-900/20 text-slate-300">
+                            <td className="p-4 text-white font-medium">{emp.name}</td>
+                            <td className="p-4 text-slate-400">{emp.email}</td>
+                            <td className="p-4">
+                              {isAdmin ? (
+                                <select
+                                  value={emp.departmentId || ''}
+                                  onChange={e => handleUpdateEmployee(emp.id, { departmentId: e.target.value || undefined })}
+                                  className="rounded-lg border border-slate-800 bg-[#161619] px-2.5 py-1.5 text-xs text-white outline-none focus:border-emerald-500/50 transition"
+                                >
+                                  <option value="">N/A</option>
+                                  {departments.map(d => (
+                                    <option key={d.id} value={d.id}>{d.name}</option>
+                                  ))}
+                                </select>
+                              ) : (
+                                emp.department?.name || 'N/A'
+                              )}
+                            </td>
+                            <td className="p-4">
+                              {isAdmin ? (
+                                <select
+                                  value={emp.role}
+                                  onChange={e => handleUpdateEmployee(emp.id, { role: e.target.value })}
+                                  className="rounded-lg border border-slate-800 bg-[#161619] px-2.5 py-1.5 text-xs text-white outline-none focus:border-emerald-500/50 transition"
+                                >
+                                  <option value="Employee">Employee</option>
+                                  <option value="DepartmentHead">Department Head</option>
+                                  <option value="AssetManager">Asset Manager</option>
+                                  <option value="Admin">Admin</option>
+                                </select>
+                              ) : (
+                                emp.role
+                              )}
+                            </td>
+                            <td className="p-4">
+                              {isAdmin ? (
+                                <select
+                                  value={emp.status}
+                                  onChange={e => handleUpdateEmployee(emp.id, { status: e.target.value })}
+                                  className="rounded-lg border border-slate-800 bg-[#161619] px-2.5 py-1.5 text-xs text-white outline-none focus:border-emerald-500/50 transition"
+                                >
+                                  <option value="Active">Active</option>
+                                  <option value="Inactive">Inactive</option>
+                                </select>
+                              ) : (
+                                <span className="inline-flex items-center rounded-full bg-emerald-500/5 px-2 py-0.5 text-xs font-medium text-emerald-400 border border-emerald-500/20">
+                                  {emp.status}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>

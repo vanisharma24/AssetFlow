@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { db } from '../db'
+import { logActivity, createNotification, getActorFromRequest } from '../utils/activityLogger'
 
 const router = Router()
 
@@ -52,8 +53,15 @@ router.get('/', async (req: Request, res: Response) => {
   }
 })
 
-// POST /api/allocations - Create a new allocation (Enforces double-allocation block)
-router.post('/', async (req: Request, res: Response) => {
+import { authenticateJWT, AuthenticatedRequest } from '../middleware/auth'
+
+// POST /api/allocations - Create a new allocation (Enforces double-allocation block, Admin/AssetManager only)
+router.post('/', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+  if (req.user?.role !== 'Admin' && req.user?.role !== 'AssetManager') {
+    res.status(403).json({ error: 'Forbidden: Requires Admin or AssetManager role.' })
+    return
+  }
+
   const { assetId, holderType, holderId, expectedReturnDate } = req.body
 
   if (!assetId || !holderType || !holderId || !expectedReturnDate) {
@@ -125,6 +133,12 @@ router.post('/', async (req: Request, res: Response) => {
       return newAllocation
     })
 
+    const actor = await getActorFromRequest(req)
+    await logActivity(actor, 'Allocate Asset', 'Allocation', allocation.id)
+    if (holderType === 'Employee') {
+      await createNotification(holderId, 'Allocation', `Asset "${asset.name}" has been allocated to you. Expected return: ${new Date(expectedReturnDate).toLocaleDateString()}`)
+    }
+
     res.status(201).json(allocation)
   } catch (error) {
     console.error('Error creating allocation:', error)
@@ -132,8 +146,8 @@ router.post('/', async (req: Request, res: Response) => {
   }
 })
 
-// POST /api/allocations/:id/return - Return an asset
-router.post('/:id/return', async (req: Request, res: Response) => {
+// POST /api/allocations/:id/return - Return an asset (Admin/AssetManager, or the allocated Employee)
+router.post('/:id/return', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
   const id = req.params.id as string
   const { returnConditionNotes } = req.body
 
@@ -149,6 +163,15 @@ router.post('/:id/return', async (req: Request, res: Response) => {
 
     if (!allocation) {
       res.status(404).json({ error: 'Allocation record not found' })
+      return
+    }
+
+    // Allow Admins, AssetManagers, or the holding user
+    const isOwner = allocation.holderType === 'Employee' && allocation.holderId === req.user?.sub
+    const isAuthorized = req.user?.role === 'Admin' || req.user?.role === 'AssetManager' || isOwner
+
+    if (!isAuthorized) {
+      res.status(403).json({ error: 'Forbidden: You do not have permission to return this asset.' })
       return
     }
 
@@ -175,6 +198,12 @@ router.post('/:id/return', async (req: Request, res: Response) => {
 
       return updatedAlloc
     })
+
+    const actor = await getActorFromRequest(req)
+    await logActivity(actor, 'Return Asset', 'Allocation', closedAllocation.id)
+    if (closedAllocation.holderType === 'Employee' && closedAllocation.holderId) {
+      await createNotification(closedAllocation.holderId, 'Return', `Your allocated asset has been checked in as returned. Condition notes: "${returnConditionNotes}"`)
+    }
 
     res.json(closedAllocation)
   } catch (error) {

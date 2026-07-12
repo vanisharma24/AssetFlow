@@ -17,13 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://your-domain.com"),
-  title: {
-    default: "AssetFlow ERP",
-    template: "%s | AssetFlow ERP",
-  },
-  description:
-    "A modern Enterprise Resource Planning platform for inventory, finance, procurement, HR, and business operations.",
+  title: "AssetFlow - Asset Tracking & Resource Booking",
+  description: "Operations dashboard for tracking asset health, allocations, transfers and resource booking.",
   applicationName: "AssetFlow ERP",
   keywords: [
     "ERP",

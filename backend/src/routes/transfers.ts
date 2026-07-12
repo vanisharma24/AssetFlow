@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { db } from '../db'
+import { logActivity, createNotification, getActorFromRequest } from '../utils/activityLogger'
 
 const router = Router()
 
@@ -77,6 +78,11 @@ router.post('/', async (req: Request, res: Response) => {
       }
     })
 
+    const actor = await getActorFromRequest(req)
+    await logActivity(actor, 'Request Transfer', 'TransferRequest', transferRequest.id)
+    await createNotification(transferRequest.fromHolderId, 'Transfer', `A transfer has been requested for your allocated asset "${asset.name}".`)
+    await createNotification(toHolderId, 'Transfer', `Asset transfer request for "${asset.name}" requires your approval/acceptance.`)
+
     res.status(201).json(transferRequest)
   } catch (error) {
     console.error('Error creating transfer request:', error)
@@ -84,13 +90,15 @@ router.post('/', async (req: Request, res: Response) => {
   }
 })
 
-// POST /api/transfers/:id/approve - Approve a transfer request
-router.post('/:id/approve', async (req: Request, res: Response) => {
-  const id = req.params.id as string
-  const { approvedBy } = req.body
+import { authenticateJWT, AuthenticatedRequest } from '../middleware/auth'
 
-  if (!approvedBy) {
-    res.status(400).json({ error: 'approvedBy (User ID) is required to approve the transfer' })
+// POST /api/transfers/:id/approve - Approve a transfer request (Admin/AssetManager/DepartmentHead only)
+router.post('/:id/approve', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+  const id = req.params.id as string
+  const approvedBy = req.user?.sub
+
+  if (req.user?.role !== 'Admin' && req.user?.role !== 'AssetManager' && req.user?.role !== 'DepartmentHead') {
+    res.status(403).json({ error: 'Forbidden: Requires Admin, AssetManager, or DepartmentHead role.' })
     return
   }
 
@@ -184,6 +192,11 @@ router.post('/:id/approve', async (req: Request, res: Response) => {
 
       return { newAllocation, updatedRequest }
     })
+
+    const actor = await getActorFromRequest(req)
+    await logActivity(actor, 'Approve Transfer', 'TransferRequest', id)
+    await createNotification(transferRequest.fromHolderId, 'Transfer', `Your asset transfer request for asset ID ${transferRequest.assetId} has been approved.`)
+    await createNotification(transferRequest.toHolderId, 'Transfer', `Asset has been transferred and allocated to you.`)
 
     res.json(result)
   } catch (error) {

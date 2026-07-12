@@ -102,8 +102,15 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 })
 
-// POST /api/assets - Register a new asset (auto-generates assetTag)
-router.post('/', async (req: Request, res: Response) => {
+import { authenticateJWT, AuthenticatedRequest } from '../middleware/auth'
+
+// POST /api/assets - Register a new asset (auto-generates assetTag, Admin/AssetManager only)
+router.post('/', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+  if (req.user?.role !== 'Admin' && req.user?.role !== 'AssetManager') {
+    res.status(403).json({ error: 'Forbidden: Requires Admin or AssetManager role.' })
+    return
+  }
+
   const {
     name,
     categoryId,
@@ -146,8 +153,13 @@ router.post('/', async (req: Request, res: Response) => {
   }
 })
 
-// PUT /api/assets/:id - Update an asset
-router.put('/:id', async (req: Request, res: Response) => {
+// PUT /api/assets/:id - Update an asset (Admin/AssetManager only)
+router.put('/:id', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+  if (req.user?.role !== 'Admin' && req.user?.role !== 'AssetManager') {
+    res.status(403).json({ error: 'Forbidden: Requires Admin or AssetManager role.' })
+    return
+  }
+
   const id = req.params.id as string
   const {
     name,
