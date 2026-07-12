@@ -2,13 +2,31 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Icon, T } from "./ui";
+import { Icon } from "./ui";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
+const faqs = [
+  {
+    q: "Is AssetFlow industry specific?",
+    a: "No. AssetFlow can be used by schools, hospitals, offices, factories, government agencies, and any organization managing physical assets.",
+  },
+  {
+    q: "Can multiple users reserve the same resource?",
+    a: "No. The system automatically validates bookings and prevents overlapping reservations.",
+  },
+  {
+    q: "How are maintenance requests handled?",
+    a: "Every request follows an approval workflow before repair work begins and is tracked until resolution.",
+  },
+  {
+    q: "Can assets be transferred between employees?",
+    a: "Yes. Transfers follow an approval process and maintain complete allocation history.",
+  },
+];
+
 export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
-  const rows = [0, 1, 2, 3, 4];
 
   return (
     <section id="faq" className="px-4 py-24">
@@ -22,16 +40,19 @@ export default function FAQ() {
         >
           <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            {T}
+            FAQ
           </span>
           <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl md:text-[2.75rem] md:leading-[1.1]">
-            {T}
+            Questions, Answered
           </h2>
-          <p className="text-base leading-7 text-muted">{T}</p>
+          <p className="text-base leading-7 text-muted">
+            Everything you need to know about how AssetFlow keeps operations
+            accountable and conflict-free.
+          </p>
         </motion.div>
 
         <div className="mt-12 flex flex-col gap-3">
-          {rows.map((i) => {
+          {faqs.map((faq, i) => {
             const isOpen = open === i;
             return (
               <motion.div
@@ -48,7 +69,7 @@ export default function FAQ() {
                   className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-sm font-medium text-ink sm:text-base">{T}</span>
+                  <span className="text-sm font-medium text-ink sm:text-base">{faq.q}</span>
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-border text-muted">
                     <Icon name={isOpen ? "minus" : "plus"} className="h-4 w-4" />
                   </span>
@@ -61,7 +82,7 @@ export default function FAQ() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3, ease }}
                     >
-                      <p className="px-6 pb-5 text-sm leading-6 text-muted">{T}</p>
+                      <p className="px-6 pb-5 text-sm leading-6 text-muted">{faq.a}</p>
                     </motion.div>
                   ) : null}
                 </AnimatePresence>

@@ -14,34 +14,48 @@ export function Eyebrow({ children = T }: { children?: ReactNode }) {
 }
 
 export function SectionHeading({
-  eyebrow = true,
+  eyebrow,
+  title = T,
+  desc = T,
   align = "center",
 }: {
-  eyebrow?: boolean;
+  eyebrow?: string;
+  title?: ReactNode;
+  desc?: ReactNode;
   align?: "center" | "left";
 }) {
   const alignCls =
     align === "center" ? "items-center text-center mx-auto" : "items-start text-left";
   return (
     <div className={`flex max-w-2xl flex-col gap-4 ${alignCls}`}>
-      {eyebrow ? <Eyebrow /> : null}
+      {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
       <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl md:text-[2.75rem] md:leading-[1.1]">
-        {T}
+        {title}
       </h2>
-      <p className="text-base leading-7 text-muted">{T}</p>
+      <p className="text-base leading-7 text-muted">{desc}</p>
     </div>
   );
 }
 
-/* Placeholder image block — swap for a real <Image> later */
+/* Branded visual placeholder — a soft dashboard-style panel */
 export function ImageBox({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`relative flex items-center justify-center overflow-hidden rounded-2xl border border-border bg-[var(--hover)] ${className}`}
+      className={`relative overflow-hidden rounded-2xl border border-border bg-[var(--hover)] ${className}`}
     >
-      <span className="text-xs font-medium uppercase tracking-widest text-muted/70">
-        [REPLACE IMAGE]
-      </span>
+      <div className="absolute inset-0 bg-grid opacity-60" />
+      <div className="absolute inset-0 bg-gradient-to-br from-accent-soft/70 via-transparent to-accent/10" />
+      <div className="absolute left-4 top-4 flex items-center gap-2">
+        <span className="grid h-6 w-6 place-items-center rounded-md bg-accent text-bg">
+          <Icon name="activity" className="h-3.5 w-3.5" />
+        </span>
+        <span className="text-xs font-semibold tracking-tight text-ink">AssetFlow</span>
+      </div>
+      <div className="absolute inset-x-4 bottom-4 flex gap-3">
+        <div className="h-16 flex-1 rounded-lg border border-border bg-card/80" />
+        <div className="h-16 flex-1 rounded-lg border border-border bg-card/80" />
+        <div className="hidden h-16 flex-1 rounded-lg border border-border bg-card/80 sm:block" />
+      </div>
     </div>
   );
 }

@@ -1,9 +1,18 @@
-import { Icon, T } from "./ui";
+import { Icon } from "./ui";
 
-const columns = [
-  [T, T, T, T],
-  [T, T, T, T],
-  [T, T, T, T],
+const columns: { heading: string; links: string[] }[] = [
+  {
+    heading: "Product",
+    links: ["Asset Management", "Resource Booking", "Maintenance", "Audits"],
+  },
+  {
+    heading: "Company",
+    links: ["About", "Documentation", "GitHub", "Contact"],
+  },
+  {
+    heading: "Resources",
+    links: ["API", "Support", "Privacy Policy", "Terms"],
+  },
 ];
 
 export default function Footer() {
@@ -15,17 +24,20 @@ export default function Footer() {
             <span className="grid h-7 w-7 place-items-center rounded-md bg-accent text-bg">
               <Icon name="activity" className="h-4 w-4" />
             </span>
-            <span className="text-base font-semibold tracking-tight">{T}</span>
+            <span className="text-base font-semibold tracking-tight">AssetFlow</span>
           </a>
-          <p className="mt-4 max-w-xs text-sm leading-6 text-muted">{T}</p>
+          <p className="mt-4 max-w-xs text-sm leading-6 text-muted">
+            An enterprise asset management platform for tracking, booking,
+            maintenance, and audits — all in one place.
+          </p>
         </div>
 
-        {columns.map((col, i) => (
-          <div key={i}>
-            <h4 className="text-sm font-semibold text-ink">{T}</h4>
+        {columns.map((col) => (
+          <div key={col.heading}>
+            <h4 className="text-sm font-semibold text-ink">{col.heading}</h4>
             <ul className="mt-4 flex flex-col gap-3">
-              {col.map((l, k) => (
-                <li key={k}>
+              {col.links.map((l) => (
+                <li key={l}>
                   <a
                     href="#"
                     className="text-sm text-muted transition-colors hover:text-ink"
@@ -40,7 +52,7 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto mt-12 flex max-w-6xl flex-col items-center justify-between gap-4 border-t border-border pt-6 text-sm text-muted sm:flex-row">
-        <p>{T}</p>
+        <p>Built for the Odoo Hiring Hackathon • 2026</p>
         <div className="flex gap-2">
           {[0, 1, 2, 3].map((i) => (
             <a
