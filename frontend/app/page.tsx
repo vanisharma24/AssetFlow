@@ -19,6 +19,7 @@ export default function Home() {
       <Navbar />
       <main className="flex-1 bg-[radial-gradient(circle_at_top_left,_rgba(15,23,42,0.04),_transparent_35%)]">
         <DashboardShell />
+      </main>
       <main className="flex-1">
         <Hero />
         <Logos />
