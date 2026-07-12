@@ -17,7 +17,7 @@ export default function FooterCTA() {
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <a
-                href="#"
+                href="/login"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-accent px-6 text-sm font-medium text-bg transition-opacity hover:opacity-90"
               >
                 Get Started

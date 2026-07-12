@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import DashboardShell from './components/DashboardShell'
-import { LightLogin } from '@/components/ui/sign-in'
+import LandingView from './components/LandingView'
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -40,8 +40,12 @@ export default function Home() {
   }
 
   if (!isAuthenticated) {
-    return <LightLogin />
+    return <LandingView />
   }
 
-  return <DashboardShell />
+  return (
+    <Suspense fallback={null}>
+      <DashboardShell />
+    </Suspense>
+  )
 }

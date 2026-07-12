@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import DashboardSidebar from './DashboardSidebar'
 import {
   LayoutDashboard,
   Building2,
@@ -50,7 +52,14 @@ type UserProfile = {
 }
 
 export default function DashboardShell() {
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState('dashboard')
+
+  // Sidebar links to inline tabs via /?tab=… — keep activeTab in sync.
+  useEffect(() => {
+    const t = searchParams.get('tab')
+    if (t) setActiveTab(t)
+  }, [searchParams])
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(null)
   const [kpis, setKpis] = useState<Kpis | null>(null)
   const [loadingKpis, setLoadingKpis] = useState(true)
@@ -408,69 +417,7 @@ export default function DashboardShell() {
 
   return (
     <div className="dashboard-theme flex min-h-screen bg-[#09090b] text-white">
-      {/* Sidebar Panel */}
-      <aside className="w-64 border-r border-slate-900 bg-[#0c0c0e] px-4 py-6 flex flex-col justify-between">
-        <div>
-          <div className="flex items-center gap-2 px-3 mb-8">
-            <div className="h-7 w-7 rounded bg-emerald-500 text-[#09090b] flex items-center justify-center font-bold text-sm">
-              AF
-            </div>
-            <span className="text-lg font-bold tracking-tight text-white">AssetFlow</span>
-          </div>
-
-          <nav className="space-y-1">
-            {sidebarItems.map(item => {
-              const Icon = item.icon
-              const isActive = activeTab === item.id
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveTab(item.id)
-                    setSearchQuery('')
-                    setStatusFilter('')
-                  }}
-                  className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-xl transition ${
-                    isActive
-                      ? 'border border-emerald-500/50 text-emerald-400 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.05)]'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-900/50'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.name}
-                </button>
-              )
-            })}
-          </nav>
-        </div>
-
-        {/* User Block at bottom */}
-        {currentUser && (
-          <div className="border-t border-slate-900 pt-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-slate-800 text-slate-200 flex items-center justify-center font-semibold text-xs border border-slate-700">
-                {currentUser.name
-                  .split(' ')
-                  .map(n => n[0])
-                  .slice(0, 2)
-                  .join('')
-                  .toUpperCase()}
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-xs font-semibold text-white truncate">{currentUser.name}</p>
-                <p className="text-[10px] text-slate-500 truncate">{currentUser.role}</p>
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="text-slate-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-rose-500/5 transition"
-              title="Logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
-        )}
-      </aside>
+      <DashboardSidebar />
 
       {/* Main Content Pane */}
       <main className="flex-1 p-8 overflow-y-auto max-w-7xl">

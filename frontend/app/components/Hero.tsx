@@ -60,7 +60,7 @@ export default function Hero() {
           className="mt-8 flex flex-col items-center gap-3 sm:flex-row"
         >
           <a
-            href="#auth"
+            href="/login"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-medium text-bg transition-opacity hover:opacity-90"
           >
             Launch Dashboard

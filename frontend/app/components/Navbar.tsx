@@ -107,7 +107,7 @@ export default function Navbar() {
               {userMenuOpen ? (
                 <div className="absolute right-0 mt-2 w-48 rounded-xl border border-slate-800 bg-[#0f0f11] p-1 shadow-lg text-sm text-slate-300 z-50">
                   <a
-                    href="#dashboard"
+                    href="/"
                     onClick={() => setUserMenuOpen(false)}
                     className="block rounded-lg px-4 py-2.5 hover:bg-slate-800 hover:text-white transition"
                   >
@@ -130,7 +130,7 @@ export default function Navbar() {
             </div>
           ) : (
             <a
-              href="#auth"
+              href="/login"
               className="hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90 sm:inline-block"
             >
               Launch Dashboard
@@ -172,7 +172,7 @@ export default function Navbar() {
               ))}
               <li>
                 <a
-                  href="#auth"
+                  href="/login"
                   onClick={() => setOpen(false)}
                   className="mt-1 block rounded-xl bg-ink px-4 py-3 text-center text-sm font-medium text-bg"
                 >
