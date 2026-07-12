@@ -1,37 +1,54 @@
-import { Icon, SectionHeading, T } from "./ui";
+import { Icon, SectionHeading, type IconName } from "./ui";
 import Reveal from "./Reveal";
+
+const roles: { icon: IconName; title: string; desc: string }[] = [
+  {
+    icon: "lock",
+    title: "Admin",
+    desc: "Configure departments, categories, employees, and organization-wide settings.",
+  },
+  {
+    icon: "tag",
+    title: "Asset Manager",
+    desc: "Manage registrations, allocations, maintenance approvals, and transfers.",
+  },
+  {
+    icon: "flag",
+    title: "Department Head",
+    desc: "Approve requests, oversee departmental assets, and coordinate resources.",
+  },
+  {
+    icon: "user",
+    title: "Employee",
+    desc: "Book resources, request maintenance, and manage assigned assets.",
+  },
+];
 
 export default function Testimonials() {
   return (
-    <section className="px-4 py-24">
+    <section id="roles" className="px-4 py-24">
       <div className="mx-auto max-w-6xl">
         <Reveal>
-          <SectionHeading />
+          <SectionHeading
+            eyebrow="Access Control"
+            title="Designed for Every Role"
+            desc="Role-based permissions give each person exactly the access they need — nothing more."
+          />
         </Reveal>
 
-        <div className="mt-14 grid gap-5 md:grid-cols-2">
-          {[0, 1].map((i) => (
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {roles.map((r, i) => (
             <Reveal
-              key={i}
-              delay={i * 0.1}
+              key={r.title}
+              delay={i * 0.08}
               as="article"
-              className="flex flex-col rounded-3xl border border-border bg-card p-8"
+              className="flex flex-col rounded-3xl border border-border bg-card p-6"
             >
-              <div className="flex gap-1 text-accent">
-                {Array.from({ length: 5 }).map((_, s) => (
-                  <Icon key={s} name="star" className="h-4 w-4 fill-current" />
-                ))}
-              </div>
-              <blockquote className="mt-5 flex-1 text-xl font-medium leading-8 text-ink">
-                “{T}”
-              </blockquote>
-              <figcaption className="mt-8 flex items-center gap-3">
-                <span className="h-11 w-11 rounded-full bg-[var(--swatch)]" />
-                <span>
-                  <span className="block text-sm font-semibold text-ink">{T}</span>
-                  <span className="block text-xs text-muted">{T}</span>
-                </span>
-              </figcaption>
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-accent-soft text-accent">
+                <Icon name={r.icon} />
+              </span>
+              <h3 className="mt-5 text-lg font-semibold text-ink">{r.title}</h3>
+              <p className="mt-2 flex-1 text-sm leading-6 text-muted">{r.desc}</p>
             </Reveal>
           ))}
         </div>
