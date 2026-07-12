@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { db } from '../db'
+import { logActivity, createNotification, getActorFromRequest } from '../utils/activityLogger'
 
 const router = Router()
 
@@ -76,6 +77,11 @@ router.post('/', async (req: Request, res: Response) => {
         status: 'Requested'
       }
     })
+
+    const actor = await getActorFromRequest(req)
+    await logActivity(actor, 'Request Transfer', 'TransferRequest', transferRequest.id)
+    await createNotification(transferRequest.fromHolderId, 'Transfer', `A transfer has been requested for your allocated asset "${asset.name}".`)
+    await createNotification(toHolderId, 'Transfer', `Asset transfer request for "${asset.name}" requires your approval/acceptance.`)
 
     res.status(201).json(transferRequest)
   } catch (error) {
@@ -184,6 +190,11 @@ router.post('/:id/approve', async (req: Request, res: Response) => {
 
       return { newAllocation, updatedRequest }
     })
+
+    const actor = await getActorFromRequest(req)
+    await logActivity(actor, 'Approve Transfer', 'TransferRequest', id)
+    await createNotification(transferRequest.fromHolderId, 'Transfer', `Your asset transfer request for asset ID ${transferRequest.assetId} has been approved.`)
+    await createNotification(transferRequest.toHolderId, 'Transfer', `Asset has been transferred and allocated to you.`)
 
     res.json(result)
   } catch (error) {
