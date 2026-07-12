@@ -105,6 +105,61 @@ npm run dev           # → http://localhost:3000
 
 ---
 
+## 🐳 Docker Deployment
+
+Run the entire stack — PostgreSQL, backend, and frontend — with a single command. No local Node or database setup required beyond Docker.
+
+### Prerequisites
+- [Docker](https://www.docker.com/) with Docker Compose
+
+### 1. Build and start the stack
+```bash
+docker compose -f docker-compose.prod.yml up --build -d
+```
+
+This builds both images and starts three containers:
+
+| Service | Container | URL / Port |
+|---------|-----------|------------|
+| Frontend (Next.js) | `assetflow-frontend` | http://localhost:3000 |
+| Backend (Express API) | `assetflow-backend` | http://localhost:5000 |
+| Database (PostgreSQL 16) | `assetflow-db-prod` | internal (`postgres:5432`) |
+
+On startup the backend automatically syncs the schema to the database (`prisma db push`), so the app is ready as soon as the containers are healthy.
+
+### 2. Seed demo data (once)
+```bash
+docker compose -f docker-compose.prod.yml exec backend npx tsx src/seed.ts
+```
+
+This loads sample assets, users, bookings, and the demo accounts:
+
+| Email | Password | Role |
+|-------|----------|------|
+| `arushi@gmail.com` | `password123` | Admin |
+| `priya@example.com` | `password123` | IT Department |
+
+### 3. Open the app
+Visit **http://localhost:3000** and sign in.
+
+### Managing the stack
+```bash
+docker compose -f docker-compose.prod.yml ps        # container status
+docker compose -f docker-compose.prod.yml logs -f    # follow logs
+docker compose -f docker-compose.prod.yml down       # stop (keeps the DB volume)
+docker compose -f docker-compose.prod.yml down -v    # stop and wipe the database
+```
+
+### Configuration notes
+- **`NEXT_PUBLIC_API_URL`** is baked into the frontend at build time (default `http://localhost:5000`). It must be the backend URL the **browser** can reach. To deploy on a server, rebuild with your public backend URL:
+  ```bash
+  docker compose -f docker-compose.prod.yml build \
+    --build-arg NEXT_PUBLIC_API_URL=https://api.your-domain.com frontend
+  ```
+- The database credentials and JWT settings in `docker-compose.prod.yml` are development defaults — change them before any public deployment.
+
+---
+
 ## 📁 Project Structure
 
 ```
