@@ -48,7 +48,7 @@ export default function Navbar() {
         {/* CTA + mobile toggle */}
         <div className="flex items-center gap-2">
           <a
-            href="#"
+            href="/login"
             className="hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90 sm:inline-block"
           >
             Launch Dashboard
@@ -88,7 +88,7 @@ export default function Navbar() {
               ))}
               <li>
                 <a
-                  href="#"
+                  href="/login"
                   onClick={() => setOpen(false)}
                   className="mt-1 block rounded-xl bg-ink px-4 py-3 text-center text-sm font-medium text-bg"
                 >
