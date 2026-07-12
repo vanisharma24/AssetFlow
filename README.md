@@ -6,6 +6,9 @@
 
 Track every asset. Book every resource. Automate every workflow.
 
+<img src="docs/screenshots/image.png" width="900">
+
+
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Express](https://img.shields.io/badge/Express-API-green?logo=express)](https://expressjs.com/)
@@ -99,12 +102,6 @@ cd frontend
 npm install
 npm run dev           # → http://localhost:3000
 ```
-
-### Demo Accounts
-| Email | Password | Role |
-|-------|----------|------|
-| `arushi@gmail.com` | `password123` | Admin |
-| `priya@example.com` | `password123` | IT Department |
 
 ---
 
