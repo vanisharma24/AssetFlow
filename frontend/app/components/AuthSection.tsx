@@ -2,16 +2,15 @@
 
 import { useState } from 'react'
 
-type Mode = 'signup' | 'signin'
-
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
+type Mode = 'signup' | 'signin'
+
 export default function AuthSection() {
-  const [mode, setMode] = useState<Mode>('signup')
+  const [mode, setMode] = useState<Mode>('signin') // default to signin for convenience
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [token, setToken] = useState<string | null>(null)
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -37,12 +36,13 @@ export default function AuthSection() {
         throw new Error(data.message || 'Authentication failed')
       }
 
-      setToken(data.token)
       localStorage.setItem('assetflow_token', data.token)
-      setMessage({
-        type: 'success',
-        text: mode === 'signup' ? 'Account created successfully.' : 'Signed in successfully.',
-      })
+      // notify other components (Navbar, page) that auth state changed
+      try {
+        window.dispatchEvent(new Event('assetflow-auth'))
+      } catch (e) {
+        /* ignore */
+      }
       setForm({ name: '', email: '', password: '' })
     } catch (error) {
       setMessage({
@@ -55,101 +55,104 @@ export default function AuthSection() {
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 py-16 lg:px-8">
-      <div className="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-xl backdrop-blur sm:p-8">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Auth demo</p>
-            <h2 className="text-3xl font-semibold text-slate-900">Sign up or sign in</h2>
+    <div className="flex min-h-screen items-center justify-center bg-[#09090b] px-4 text-white">
+      <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-[#0f0f11] p-8 shadow-2xl">
+        <div className="text-center">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-6 w-6">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+            </svg>
           </div>
-          <div className="flex rounded-full border border-slate-200 bg-slate-50 p-1">
-            <button
-              type="button"
-              onClick={() => {
-                setMode('signup')
-                setMessage(null)
-              }}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                mode === 'signup' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Sign up
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode('signin')
-                setMessage(null)
-              }}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                mode === 'signin' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Sign in
-            </button>
-          </div>
+          <h2 className="text-2xl font-bold tracking-tight text-white">AssetFlow</h2>
+          <p className="mt-1.5 text-sm text-slate-400">Operations and Asset Tracking Center</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid gap-4">
+        <div className="mt-6 flex rounded-xl border border-slate-800 bg-[#161619] p-1">
+          <button
+            type="button"
+            onClick={() => {
+              setMode('signin')
+              setMessage(null)
+            }}
+            className={`flex-1 rounded-lg py-2 text-center text-sm font-medium transition ${
+              mode === 'signin' ? 'bg-[#222226] text-white' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Sign in
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMode('signup')
+              setMessage(null)
+            }}
+            className={`flex-1 rounded-lg py-2 text-center text-sm font-medium transition ${
+              mode === 'signup' ? 'bg-[#222226] text-white' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Register
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
           {mode === 'signup' && (
-            <label className="grid gap-2 text-sm font-medium text-slate-700">
-              Full name
+            <div>
+              <label className="block text-sm font-medium text-slate-400 mb-1">Full name</label>
               <input
                 required
                 value={form.name}
                 onChange={(event) => setForm({ ...form, name: event.target.value })}
-                className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none ring-0 transition focus:border-slate-400"
+                className="w-full rounded-xl border border-slate-800 bg-[#161619] px-4 py-2.5 text-white outline-none focus:border-emerald-500/50 transition text-sm"
                 placeholder="Jane Doe"
               />
-            </label>
+            </div>
           )}
 
-          <label className="grid gap-2 text-sm font-medium text-slate-700">
-            Email
+          <div>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Email address</label>
             <input
               required
               type="email"
               value={form.email}
               onChange={(event) => setForm({ ...form, email: event.target.value })}
-              className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none ring-0 transition focus:border-slate-400"
-              placeholder="you@example.com"
+              className="w-full rounded-xl border border-slate-800 bg-[#161619] px-4 py-2.5 text-white outline-none focus:border-emerald-500/50 transition text-sm"
+              placeholder="name@example.com"
             />
-          </label>
+          </div>
 
-          <label className="grid gap-2 text-sm font-medium text-slate-700">
-            Password
+          <div>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Password</label>
             <input
               required
               type="password"
               value={form.password}
               onChange={(event) => setForm({ ...form, password: event.target.value })}
-              className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none ring-0 transition focus:border-slate-400"
-              placeholder="At least 8 characters"
+              className="w-full rounded-xl border border-slate-800 bg-[#161619] px-4 py-2.5 text-white outline-none focus:border-emerald-500/50 transition text-sm"
+              placeholder="••••••••"
             />
-          </label>
+          </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="mt-2 w-full rounded-xl bg-emerald-500 py-3 text-sm font-semibold text-[#09090b] transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? 'Please wait...' : mode === 'signup' ? 'Create account' : 'Sign in'}
           </button>
         </form>
 
         {message && (
-          <p className={`mt-4 rounded-xl px-4 py-3 text-sm ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+          <p className="mt-4 rounded-xl bg-rose-500/10 p-3 text-center text-sm text-rose-400 border border-rose-500/20">
             {message.text}
           </p>
         )}
 
-        {token && (
-          <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-            <p className="font-semibold">Token saved locally</p>
-            <p className="mt-1 break-all text-xs text-slate-500">{token}</p>
-          </div>
-        )}
+        <div className="mt-6 text-center text-xs text-slate-500 border-t border-slate-800/60 pt-4">
+          Demo accounts:<br />
+          <span className="font-semibold text-slate-400">arushi@gmail.com</span> / password123 (Admin)<br />
+          <span className="font-semibold text-slate-400">priya@example.com</span> / password123 (IT Dept)
+        </div>
       </div>
-    </section>
+    </div>
   )
 }

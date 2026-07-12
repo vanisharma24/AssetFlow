@@ -6,8 +6,16 @@ const router = Router()
 
 // GET /api/maintenances - List all maintenance requests
 router.get('/', async (req: Request, res: Response) => {
+  // Support optional query filters: ?status=...&assetId=...
+  const { status, assetId } = req.query
+  const where: any = {}
+
+  if (status) where.status = status
+  if (assetId) where.assetId = assetId
+
   try {
     const maintenances = await db.maintenanceReq.findMany({
+      where,
       include: {
         asset: {
           select: { id: true, assetTag: true, name: true, status: true }
@@ -33,17 +41,19 @@ router.post('/', async (req: Request, res: Response) => {
   const { assetId, raisedBy, issueDescription, priority } = req.body
 
   if (!assetId || !raisedBy || !issueDescription || !priority) {
-    res.status(400).json({ error: 'Required: assetId, raisedBy, issueDescription, priority' })
+    res.status(400).json({ error: 'Required fields: assetId, raisedBy, issueDescription, priority' })
     return
   }
 
   try {
+    // 1. Verify asset exists
     const asset = await db.asset.findUnique({ where: { id: assetId } })
     if (!asset) {
       res.status(404).json({ error: 'Asset not found' })
       return
     }
 
+    // 2. Create maintenance request (no status change until approval)
     const ticket = await db.maintenanceReq.create({
       data: {
         assetId,
@@ -166,6 +176,12 @@ router.post('/:id/resolve', async (req: Request, res: Response) => {
     const ticket = await db.maintenanceReq.findUnique({ where: { id } })
     if (!ticket) {
       res.status(404).json({ error: 'Maintenance request not found' })
+      return
+    }
+
+    // Guard: already resolved check (from remote branch)
+    if (ticket.status === 'Resolved') {
+      res.status(400).json({ error: 'Maintenance request is already resolved' })
       return
     }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "./ui";
 
@@ -14,6 +14,47 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<{ id: string; name: string; email: string } | null>(null)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const token = localStorage.getItem('assetflow_token')
+        if (!token) {
+          setUser(null)
+          return
+        }
+
+        const res = await fetch(`${API_BASE}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        if (!res.ok) {
+          setUser(null)
+          return
+        }
+
+        const data = await res.json()
+        setUser(data.user ?? null)
+      } catch (e) {
+        setUser(null)
+      }
+    }
+
+    loadUser()
+
+    const handler = () => loadUser()
+    window.addEventListener('assetflow-auth', handler)
+    window.addEventListener('storage', handler)
+
+    return () => {
+      window.removeEventListener('assetflow-auth', handler)
+      window.removeEventListener('storage', handler)
+    }
+  }, [])
 
   return (
     <motion.header
@@ -45,21 +86,56 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* CTA + mobile toggle */}
+        {/* CTA / User + mobile toggle */}
         <div className="flex items-center gap-2">
-          <a
-            href="/login"
-            className="hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90 sm:inline-block"
-          >
-            Launch Dashboard
-          </a>
+          {user ? (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                className="grid h-9 w-9 place-items-center rounded-full bg-purple-600 text-white"
+                aria-label="User menu"
+              >
+                {user.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase()}
+              </button>
+
+              {userMenuOpen ? (
+                <div className="absolute right-0 mt-2 w-40 rounded-md bg-white shadow-lg">
+                  <button
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                    onClick={() => {
+                      localStorage.removeItem('assetflow_token')
+                      window.dispatchEvent(new Event('assetflow-auth'))
+                      setUser(null)
+                      setUserMenuOpen(false)
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <a
+              href="/login"
+              className="hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90 sm:inline-block"
+            >
+              Launch Dashboard
+            </a>
+          )}
+
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             className="grid h-9 w-9 place-items-center rounded-full border border-border text-ink md:hidden"
             aria-label="Toggle menu"
           >
-            <Icon name={open ? "close" : "menu"} />
+            <Icon name={open ? 'close' : 'menu'} />
           </button>
         </div>
       </nav>
@@ -95,6 +171,21 @@ export default function Navbar() {
                   Launch Dashboard
                 </a>
               </li>
+              {user ? (
+                <li>
+                  <a
+                    href="#"
+                    onClick={() => {
+                      localStorage.removeItem('assetflow_token')
+                      window.dispatchEvent(new Event('assetflow-auth'))
+                      setOpen(false)
+                    }}
+                    className="mt-1 block rounded-xl bg-red-50 px-4 py-3 text-center text-sm font-medium text-red-700"
+                  >
+                    Logout
+                  </a>
+                </li>
+              ) : null}
             </ul>
           </motion.div>
         ) : null}
