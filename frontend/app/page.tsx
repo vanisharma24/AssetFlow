@@ -2,9 +2,10 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Logos from "./components/Logos";
 import WhyChoose from "./components/WhyChoose";
+import Analytics from "./components/Analytics";
 import AIFeatures from "./components/AIFeatures";
 import CoreFeatures from "./components/CoreFeatures";
-import Analytics from "./components/Analytics";
+import Modules from "./components/Modules";
 import Testimonials from "./components/Testimonials";
 import Pricing from "./components/Pricing";
 import FAQ from "./components/FAQ";
@@ -19,9 +20,10 @@ export default function Home() {
         <Hero />
         <Logos />
         <WhyChoose />
+        <Analytics />
         <AIFeatures />
         <CoreFeatures />
-        <Analytics />
+        <Modules />
         <Testimonials />
         <Pricing />
         <FAQ />

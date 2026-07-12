@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Icon, ImageBox, T } from "./ui";
+import { Icon, ImageBox } from "./ui";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -36,18 +36,23 @@ export default function Hero() {
               />
             ))}
           </span>
-          <span className="text-xs font-medium text-muted">{T}</span>
+          <span className="text-xs font-medium text-muted">
+            Enterprise Asset Management Platform
+          </span>
         </motion.div>
 
         <motion.h1
           variants={item}
-          className="mt-6 text-4xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl"
+          className="mt-6 text-4xl font-semibold leading-[1.05] tracking-tight text-ink sm:text-6xl text-balance"
         >
-          {T}
+          Manage Every Asset. Track Every Resource. Automate Every Workflow.
         </motion.h1>
 
         <motion.p variants={item} className="mt-6 max-w-xl text-lg leading-8 text-muted">
-          {T}
+          AssetFlow centralizes asset tracking, resource booking, maintenance
+          workflows, and audit management into one intelligent ERP platform. Reduce
+          manual work, eliminate allocation conflicts, and gain complete visibility
+          across your organization.
         </motion.p>
 
         <motion.div
@@ -58,10 +63,15 @@ export default function Hero() {
             href="#"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-medium text-bg transition-opacity hover:opacity-90"
           >
-            {T}
+            Launch Dashboard
             <Icon name="arrow" className="h-4 w-4" />
           </a>
-          <span className="text-sm text-muted">{T}</span>
+          <a
+            href="#features"
+            className="inline-flex h-12 items-center justify-center rounded-full border border-border bg-card px-6 text-sm font-medium text-ink transition-colors hover:bg-[var(--hover)]"
+          >
+            View Features
+          </a>
         </motion.div>
       </motion.div>
 

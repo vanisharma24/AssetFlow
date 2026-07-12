@@ -2,9 +2,15 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Icon, T } from "./ui";
+import { Icon } from "./ui";
 
-const links = [T, T, T, T, T];
+const links = [
+  { label: "Features", href: "#features" },
+  { label: "Workflow", href: "#workflow" },
+  { label: "Roles", href: "#roles" },
+  { label: "Modules", href: "#modules" },
+  { label: "FAQ", href: "#faq" },
+];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -22,18 +28,18 @@ export default function Navbar() {
           <span className="grid h-7 w-7 place-items-center rounded-md bg-accent text-bg">
             <Icon name="activity" className="h-4 w-4" />
           </span>
-          <span className="text-base font-semibold tracking-tight">{T}</span>
+          <span className="text-base font-semibold tracking-tight">AssetFlow</span>
         </a>
 
         {/* Desktop links */}
         <ul className="hidden items-center gap-1 md:flex">
-          {links.map((l, i) => (
-            <li key={i}>
+          {links.map((l) => (
+            <li key={l.label}>
               <a
-                href="#"
+                href={l.href}
                 className="rounded-full px-3 py-1.5 text-sm text-muted transition-colors hover:text-ink"
               >
-                {l}
+                {l.label}
               </a>
             </li>
           ))}
@@ -45,7 +51,7 @@ export default function Navbar() {
             href="#"
             className="hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90 sm:inline-block"
           >
-            {T}
+            Launch Dashboard
           </a>
           <button
             type="button"
@@ -69,14 +75,14 @@ export default function Navbar() {
             className="absolute left-4 right-4 top-20 rounded-2xl border border-border bg-card p-2 shadow-lg md:hidden"
           >
             <ul className="flex flex-col">
-              {links.map((l, i) => (
-                <li key={i}>
+              {links.map((l) => (
+                <li key={l.label}>
                   <a
-                    href="#"
+                    href={l.href}
                     onClick={() => setOpen(false)}
                     className="block rounded-xl px-4 py-3 text-sm text-muted hover:bg-[var(--hover)] hover:text-ink"
                   >
-                    {l}
+                    {l.label}
                   </a>
                 </li>
               ))}
@@ -86,7 +92,7 @@ export default function Navbar() {
                   onClick={() => setOpen(false)}
                   className="mt-1 block rounded-xl bg-ink px-4 py-3 text-center text-sm font-medium text-bg"
                 >
-                  {T}
+                  Launch Dashboard
                 </a>
               </li>
             </ul>

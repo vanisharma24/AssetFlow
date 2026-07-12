@@ -1,23 +1,38 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono, Geist } from "next/font/google";
-import "./globals.css";
+import { Geist, Geist_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
+import "./globals.css";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
-const inter = Inter({
-  variable: "--font-inter",
+const geist = Geist({
   subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "[REPLACE TEXTS]",
-  description: "[REPLACE TEXTS]",
+  metadataBase: new URL("https://your-domain.com"),
+  title: {
+    default: "AssetFlow ERP",
+    template: "%s | AssetFlow ERP",
+  },
+  description:
+    "A modern Enterprise Resource Planning platform for inventory, finance, procurement, HR, and business operations.",
+  applicationName: "AssetFlow ERP",
+  keywords: [
+    "ERP",
+    "Enterprise",
+    "Inventory",
+    "Finance",
+    "Dashboard",
+    "Management",
+  ],
+  themeColor: "#FFFFFF",
 };
 
 export default function RootLayout({
@@ -28,9 +43,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", inter.variable, geistMono.variable, "font-sans", geist.variable)}
+      suppressHydrationWarning
+      className={cn(
+        "h-full scroll-smooth antialiased",
+        geist.variable,
+        geistMono.variable
+      )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-screen bg-background font-sans text-foreground">
+        {children}
+      </body>
     </html>
   );
 }
