@@ -1,399 +1,189 @@
-<p align="center">
+<div align="center">
 
-# 🚀 AssetFlow
+# 🗂️ AssetFlow
 
-### Smart Asset Lifecycle Management Platform
+### Enterprise Asset Management & Resource Booking Platform
 
-Track • Allocate • Maintain • Audit • Analyze
+Track every asset. Book every resource. Automate every workflow.
 
-Built for the Odoo Hackathon 2026
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Express](https://img.shields.io/badge/Express-API-green?logo=express)](https://expressjs.com/)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)](https://www.postgresql.org/)
 
-</p>
-
----
-
-<p align="center">
-
-![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=nextdotjs)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql)
-![Docker](https://img.shields.io/badge/Docker-blue?style=for-the-badge&logo=docker)
-![Odoo](https://img.shields.io/badge/Odoo-purple?style=for-the-badge&logo=odoo)
-
-</p>
+</div>
 
 ---
 
 ## 📖 Overview
 
-AssetFlow is an enterprise-grade Asset Management Platform that enables organizations to manage the complete lifecycle of physical assets—from procurement to retirement.
+**AssetFlow** is a full-stack Enterprise Resource Planning (ERP) platform that centralizes
+asset tracking, resource booking, maintenance workflows, and audit management into one
+intelligent system. It replaces spreadsheets and manual approvals with structured,
+conflict-free workflows — giving organizations complete visibility over every physical
+asset from registration to retirement.
 
-The platform provides:
-
-- 📦 Asset Inventory
-- 👥 Employee Allocation
-- 📅 Shared Resource Booking
-- 🔧 Maintenance Workflow
-- 🔁 Asset Transfers
-- 📊 Analytics Dashboard
-- 📑 Audit Logs
-- 🔔 Smart Notifications
-
-Designed with scalability, automation, and transparency in mind.
+Built for the **Odoo Hiring Hackathon** with the same rigor as a real production ERP.
 
 ---
 
-# 🎥 Demo
+## ✨ Features
 
-> Demo Video
-
-Coming Soon
-
----
-
-# ✨ Features
-
-## 👨‍💼 Super Admin
-
-- Organization Management
-- Department Management
-- Employee Management
-- Asset Categories
-- Analytics Dashboard
-- System Audit Logs
+- **Asset Lifecycle Management** — Register, track, and retire assets with complete ownership history across 7 lifecycle states.
+- **Smart Allocation & Transfers** — Assign assets to employees or departments through structured approval chains, with automatic duplicate-allocation prevention.
+- **Resource Booking** — Reserve meeting rooms, vehicles, and shared equipment with conflict-free calendar scheduling.
+- **Maintenance Workflows** — Raise, approve, assign, and resolve maintenance requests with full audit history.
+- **Scheduled Audits** — Run audit cycles that surface discrepancies and keep inventory records clean.
+- **Role-Based Access Control** — Separate permissions for Admin, Asset Manager, Department Head, and Employee.
+- **Real-Time Dashboard** — Role-specific KPIs, pending approvals, upcoming bookings, and operational insights.
+- **Notifications & Activity Logs** — Every significant action emits a notification and lands in an immutable activity trail.
 
 ---
 
-## 🏢 Department Head
+## 🛠️ Built With
 
-- Approve Asset Requests
-- View Department Assets
-- Track Employees
-- Department Reports
+**Frontend**
+- [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
+- [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS v4](https://tailwindcss.com/)
+- [Framer Motion](https://www.framer.com/motion/) · [Recharts](https://recharts.org/) · [lucide-react](https://lucide.dev/)
 
----
-
-## 📦 Asset Manager
-
-- Register Assets
-- Asset Allocation
-- Asset Transfers
-- Asset Retirement
-- QR Code Generation
-- Maintenance Approval
+**Backend**
+- [Express](https://expressjs.com/) + TypeScript
+- [Prisma ORM](https://www.prisma.io/) with the PostgreSQL adapter
+- [PostgreSQL](https://www.postgresql.org/)
+- JWT authentication with bcrypt password hashing
 
 ---
 
-## 👤 Employee
+## 🚀 Getting Started
 
-- View Assigned Assets
-- Raise Maintenance Request
-- Book Shared Assets
-- View Booking Calendar
-- Transfer Request
+### Prerequisites
+- Node.js 20+
+- Docker (for PostgreSQL) or a local PostgreSQL 16 instance
 
----
-
-# 📸 Screenshots
-
-## Dashboard
-
-![Dashboard](screenshots/dashboard.png)
-
----
-
-## Asset Inventory
-
-![Inventory](screenshots/assets.png)
-
----
-
-## Booking Calendar
-
-![Calendar](screenshots/calendar.png)
-
----
-
-## Analytics
-
-![Analytics](screenshots/analytics.png)
-
----
-
-# 🏗️ System Architecture
-
-```text
-
-                    Users
-
- │
- ▼
-
-Next.js Frontend
-
- │ REST API
-
- ▼
-
-FastAPI Backend
-
- │
-
- ├── PostgreSQL
-
- ├── Redis
-
- ├── File Storage
-
- └── Notification Service
-
-```
-
----
-
-# 🔄 Workflow
-
-```text
-Register Asset
-
-↓
-
-Available
-
-↓
-
-Allocate
-
-↓
-
-Employee Uses Asset
-
-↓
-
-Maintenance Request
-
-↓
-
-Approval
-
-↓
-
-Repair
-
-↓
-
-Available
-
-↓
-
-Transfer
-
-↓
-
-Retirement
-
-```
-
----
-
-# ⚙️ Tech Stack
-
-## Frontend
-
-- Next.js 16
-- React 19
-- TypeScript
-- TailwindCSS
-- shadcn/ui
-- Framer Motion
-- React Hook Form
-- TanStack Query
-- Zustand
-
----
-
-## Backend
-
-- FastAPI
-- SQLAlchemy
-- Alembic
-- Pydantic
-- JWT Authentication
-- Redis
-
----
-
-## Database
-
-- PostgreSQL
-
----
-
-## DevOps
-
-- Docker
-- Docker Compose
-- GitHub Actions
-
----
-
-## Design
-
-- Figma
-- Lucide Icons
-
----
-
-# 📁 Folder Structure
-
-```text
-
-assetflow/
-
-├── frontend/
-
-├── backend/
-
-├── docs/
-
-├── screenshots/
-
-├── docker/
-
-├── README.md
-
-└── docker-compose.yml
-
-```
-
----
-
-# 🛠️ Installation
-
+### 1. Clone the repository
 ```bash
-git clone https://github.com/your-team/assetflow.git
-
-cd assetflow
-
-docker compose up
-
+git clone https://github.com/vanisharma24/Odoo-Hackathon.git
+cd Odoo-Hackathon
 ```
 
-Frontend
-
-```
-http://localhost:3000
-```
-
-Backend
-
-```
-http://localhost:8000
+### 2. Start PostgreSQL
+```bash
+docker run -d --name assetflow-pg \
+  -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=assetflow \
+  -p 5432:5432 postgres:16
 ```
 
-API Docs
+### 3. Configure environment
+Create `.env.local` in the **project root**:
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/assetflow?schema=public"
+PORT=5000
+```
+
+### 4. Run the backend
+```bash
+cd backend
+npm install
+npx prisma generate
+npx prisma db push
+npx tsx src/seed.ts   # seeds demo data + accounts
+npm run dev           # → http://localhost:5000
+```
+
+### 5. Run the frontend
+```bash
+cd frontend
+npm install
+npm run dev           # → http://localhost:3000
+```
+
+### Demo Accounts
+| Email | Password | Role |
+|-------|----------|------|
+| `arushi@gmail.com` | `password123` | Admin |
+| `priya@example.com` | `password123` | IT Department |
+
+---
+
+## 📁 Project Structure
 
 ```
-http://localhost:8000/docs
+Odoo-Hackathon/
+├── frontend/          # Next.js 16 app (App Router)
+│   ├── app/           # routes: landing, login, signup, dashboard, assets, bookings…
+│   └── components/    # shared UI
+├── backend/           # Express + Prisma API
+│   ├── src/
+│   │   ├── routes/    # auth, assets, allocations, bookings, maintenances…
+│   │   ├── controllers/
+│   │   └── seed.ts
+│   └── prisma/schema.prisma
+└── .env.local         # DATABASE_URL (not committed)
 ```
 
 ---
 
-# 🔑 Environment Variables
+## 🗺️ Roadmap
 
-Frontend
-
-```
-NEXT_PUBLIC_API_URL=
-```
-
-Backend
-
-```
-DATABASE_URL=
-
-JWT_SECRET=
-
-REDIS_URL=
-```
+- [ ] Email notifications for overdue returns and pending approvals
+- [ ] Exportable PDF/CSV audit reports
+- [ ] QR-code asset tagging and mobile scanning
+- [ ] Multi-tenant / super-admin platform controls
 
 ---
 
-# 📊 Core Modules
+## 🤝 Contributing
 
-- Authentication
-- Asset Inventory
-- Department Management
-- Employee Management
-- Booking System
-- Maintenance
-- Reports
-- Notifications
-- Audit Logs
+Contributions are welcome! To fix a bug or add a feature:
+
+1. Fork the repo
+2. Create a branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m "Add your feature"`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
 
 ---
 
-# 📈 Analytics
+## 👥 Team
 
-Dashboard includes
-
-- Total Assets
-- Active Assets
-- Assets Under Maintenance
-- Asset Utilization
-- Department-wise Distribution
-- Monthly Maintenance Cost
-- Booking Trends
-
----
-
-# 🔐 Security
-
-- JWT Authentication
-- RBAC (Role Based Access Control)
-- Audit Logs
-- Secure API Validation
-- Password Hashing
-- Protected Routes
-
----
-
-# 🚀 Future Scope
-
-- AI-powered Predictive Maintenance
-- RFID Integration
-- Barcode Scanner
-- Mobile Application
-- Email Notifications
-- QR Asset Tracking
-- ERP Integration
-- Asset Depreciation Calculator
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/vanisharma24">
+        <img src="https://github.com/vanisharma24.png" width="100" alt="Vani Sharma"/><br/>
+        <sub><b>Vani Sharma</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/arushii09">
+        <img src="https://github.com/arushii09.png" width="100" alt="Arushi"/><br/>
+        <sub><b>Arushi</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/wrotecode">
+        <img src="https://github.com/wrotecode.png" width="100" alt="Pallavi"/><br/>
+        <sub><b>Pallavi</b></sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/DEEPTANSHU-HANDLE">
+        <img src="https://github.com/DEEPTANSHU-HANDLE.png" width="100" alt="Deeptanshu Kumar"/><br/>
+        <sub><b>Deeptanshu Kumar</b></sub>
+      </a>
+    </td>
+  </tr>
+</table>
 
 ---
 
-# 🏆 Hackathon
+## 📄 License
 
-Built for
+Distributed under the MIT License. See `LICENSE` for details.
 
-**Odoo Hackathon 2026**
-
-Problem Statement
-
-**AssetFlow – Smart Asset Lifecycle Management Platform**
-
----
-
-# ❤️ Built With
-
-- ❤️ Next.js
-- ⚡ FastAPI
-- 🐘 PostgreSQL
-- 🐳 Docker
-- 🎨 TailwindCSS
-- ✨ shadcn/ui
-
----
-
-# 📜 License
-
-MIT License
+<div align="center">
+Built with 💚 for the Odoo Hiring Hackathon · 2026
+</div>
