@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { FloatingChatWidget } from "@/components/ui/floating-chat-widget-shadcnui";
@@ -33,9 +33,10 @@ export const metadata: Metadata = {
     "Dashboard",
     "Management",
   ],
+};
+
+export const viewport: Viewport = {
   themeColor: "#FFFFFF",
-  title: "AssetFlow - Asset Tracking & Resource Booking",
-  description: "Operations dashboard for tracking asset health, allocations, transfers and resource booking.",
 };
 
 export default function RootLayout({

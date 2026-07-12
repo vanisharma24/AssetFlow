@@ -26,7 +26,7 @@ const items: { icon: IconName; title: string; desc: string }[] = [
 
 export default function Analytics() {
   return (
-    <section className="bg-card px-4 py-24">
+    <section className="border-y border-border bg-surface px-4 py-24">
       <div className="mx-auto max-w-6xl">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <Reveal>

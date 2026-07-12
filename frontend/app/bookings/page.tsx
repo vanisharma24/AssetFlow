@@ -186,7 +186,7 @@ export default function BookingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-6 relative">
+    <div className="dashboard-theme min-h-screen bg-slate-900 text-slate-100 font-sans p-6 relative">
       {/* Top Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">

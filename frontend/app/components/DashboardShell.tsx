@@ -340,7 +340,7 @@ export default function DashboardShell() {
   ]
 
   return (
-    <div className="flex min-h-screen bg-[#09090b] text-white">
+    <div className="dashboard-theme flex min-h-screen bg-[#09090b] text-white">
       {/* Sidebar Panel */}
       <aside className="w-64 border-r border-slate-900 bg-[#0c0c0e] px-4 py-6 flex flex-col justify-between">
         <div>

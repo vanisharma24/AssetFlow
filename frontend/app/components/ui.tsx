@@ -29,7 +29,7 @@ export function SectionHeading({
   return (
     <div className={`flex max-w-2xl flex-col gap-4 ${alignCls}`}>
       {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-      <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl md:text-[2.75rem] md:leading-[1.1]">
+      <h2 className="text-3xl font-semibold tracking-tight text-ink text-balance sm:text-4xl md:text-[2.75rem] md:leading-[1.1]">
         {title}
       </h2>
       <p className="text-base leading-7 text-muted">{desc}</p>
@@ -37,24 +37,83 @@ export function SectionHeading({
   );
 }
 
-/* Branded visual placeholder — a soft dashboard-style panel */
+/* Branded product mock — a credible AssetFlow dashboard panel.
+   Fills its parent (parent controls aspect ratio); content is top-aligned
+   so it crops gracefully at tighter ratios. */
+const mockKpis = [
+  { label: "Total Assets", value: "1,284", trend: "+4.2%" },
+  { label: "Utilization", value: "87%", trend: "+1.8%" },
+  { label: "Pending", value: "12", trend: "-3" },
+];
+const mockBars = [42, 61, 38, 74, 55, 83, 48, 67];
+const mockRows = [
+  { name: "MacBook Pro 16\"", tag: "Allocated", tone: "ok" },
+  { name: "Conference Room A", tag: "Booked", tone: "info" },
+  { name: "Forklift #7", tag: "Maintenance", tone: "warn" },
+];
+
 export function ImageBox({ className = "" }: { className?: string }) {
   return (
     <div
       className={`relative overflow-hidden rounded-2xl border border-border bg-[var(--hover)] ${className}`}
     >
-      <div className="absolute inset-0 bg-grid opacity-60" />
-      <div className="absolute inset-0 bg-gradient-to-br from-accent-soft/70 via-transparent to-accent/10" />
-      <div className="absolute left-4 top-4 flex items-center gap-2">
-        <span className="grid h-6 w-6 place-items-center rounded-md bg-accent text-bg">
-          <Icon name="activity" className="h-3.5 w-3.5" />
-        </span>
-        <span className="text-xs font-semibold tracking-tight text-ink">AssetFlow</span>
-      </div>
-      <div className="absolute inset-x-4 bottom-4 flex gap-3">
-        <div className="h-16 flex-1 rounded-lg border border-border bg-card/80" />
-        <div className="h-16 flex-1 rounded-lg border border-border bg-card/80" />
-        <div className="hidden h-16 flex-1 rounded-lg border border-border bg-card/80 sm:block" />
+      <div className="absolute inset-0 bg-grid opacity-40" />
+      <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-accent/15 blur-3xl" />
+
+      <div className="absolute inset-3 flex flex-col gap-2.5 sm:inset-4 sm:gap-3">
+        {/* window chrome */}
+        <div className="flex items-center justify-between rounded-xl border border-border bg-card/90 px-3 py-2 shadow-xs backdrop-blur">
+          <div className="flex items-center gap-2">
+            <span className="grid h-5 w-5 place-items-center rounded-md bg-accent text-bg">
+              <Icon name="activity" className="h-3 w-3" />
+            </span>
+            <span className="text-[11px] font-semibold tracking-tight text-ink">AssetFlow</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-border" />
+            <span className="h-2 w-2 rounded-full bg-border" />
+            <span className="h-2 w-2 rounded-full bg-accent/60" />
+          </div>
+        </div>
+
+        {/* KPI row */}
+        <div className="grid grid-cols-3 gap-2">
+          {mockKpis.map((k) => (
+            <div key={k.label} className="rounded-xl border border-border bg-card/90 p-2.5 backdrop-blur">
+              <p className="truncate text-[9px] font-medium uppercase tracking-wide text-muted">{k.label}</p>
+              <p className="mt-1 text-sm font-semibold leading-none text-ink">{k.value}</p>
+              <p className="mt-1 text-[9px] font-medium text-accent">{k.trend}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* chart + list */}
+        <div className="grid min-h-0 flex-1 grid-cols-5 gap-2">
+          <div className="col-span-3 flex flex-col rounded-xl border border-border bg-card/90 p-3 backdrop-blur">
+            <p className="text-[9px] font-medium uppercase tracking-wide text-muted">Utilization</p>
+            <div className="mt-auto flex h-full items-end gap-1.5 pt-2">
+              {mockBars.map((h, i) => (
+                <span
+                  key={i}
+                  className="flex-1 rounded-sm bg-accent/80"
+                  style={{ height: `${h}%`, opacity: 0.45 + (h / 100) * 0.55 }}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="col-span-2 hidden flex-col gap-1.5 rounded-xl border border-border bg-card/90 p-2.5 backdrop-blur sm:flex">
+            {mockRows.map((r) => (
+              <div key={r.name} className="flex items-center gap-1.5">
+                <span
+                  className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                    r.tone === "ok" ? "bg-accent" : r.tone === "warn" ? "bg-amber-500" : "bg-sky-500"
+                  }`}
+                />
+                <span className="truncate text-[9px] font-medium text-ink">{r.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

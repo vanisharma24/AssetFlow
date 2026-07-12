@@ -262,7 +262,7 @@ export default function ReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-[#374151] font-sans antialiased pb-24">
+    <div className="dashboard-theme min-h-screen bg-[#FAFAFA] text-[#374151] font-sans antialiased pb-24">
       
       {/* ─── Navigation Header (Matches provided UI system) ──────────────────── */}
       <header className="sticky top-0 z-40 w-full border-b border-[#E5E7EB] bg-white/80 backdrop-blur-md">

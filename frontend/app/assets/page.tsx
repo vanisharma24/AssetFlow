@@ -191,7 +191,7 @@ export default function AssetsPage() {
   const customFieldsSchema = selectedCatObj?.customFields ? Object.entries(selectedCatObj.customFields) : []
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-6 relative">
+    <div className="dashboard-theme min-h-screen bg-slate-900 text-slate-100 font-sans p-6 relative">
       {/* Header Dashboard Metrics */}
       <div className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>

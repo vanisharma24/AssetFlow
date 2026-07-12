@@ -21,7 +21,7 @@ const highlights: { icon: IconName; title: string; desc: string }[] = [
 
 export default function Pricing() {
   return (
-    <section id="highlights" className="bg-card px-4 py-24">
+    <section id="highlights" className="border-y border-border bg-surface px-4 py-24">
       <div className="mx-auto max-w-5xl">
         <Reveal>
           <SectionHeading

@@ -26,7 +26,7 @@ const blocks: { icon: IconName; title: string; desc: string }[] = [
 
 export default function AIFeatures() {
   return (
-    <section id="workflow" className="bg-card px-4 py-24">
+    <section id="workflow" className="px-4 py-24">
       <div className="mx-auto max-w-6xl">
         <Reveal>
           <SectionHeading
