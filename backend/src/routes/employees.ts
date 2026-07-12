@@ -29,10 +29,18 @@ router.get('/', async (req: Request, res: Response) => {
   }
 })
 
-// PATCH /api/employees/:id - Update employee department or status
-router.patch('/:id', async (req: Request, res: Response) => {
+import { authenticateJWT, AuthenticatedRequest } from '../middleware/auth'
+
+// PATCH /api/employees/:id - Update employee department, role, or status (Admin only for role/status updates)
+router.patch('/:id', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
   const id = req.params.id as string
-  const { name, departmentId, status } = req.body
+  const { name, departmentId, status, role } = req.body
+
+  // If attempting to update role or status, verify current user is Admin
+  if ((role !== undefined || status !== undefined || departmentId !== undefined) && req.user?.role !== 'Admin') {
+    res.status(403).json({ error: 'Forbidden: Only Administrators can modify roles, departments or statuses.' })
+    return
+  }
 
   try {
     const employee = await db.user.update({
@@ -40,7 +48,8 @@ router.patch('/:id', async (req: Request, res: Response) => {
       data: {
         name: name !== undefined ? name : undefined,
         departmentId: departmentId !== undefined ? departmentId : undefined,
-        status: status !== undefined ? status : undefined
+        status: status !== undefined ? status : undefined,
+        role: role !== undefined ? role : undefined
       },
       select: {
         id: true,

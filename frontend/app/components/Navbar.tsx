@@ -105,14 +105,22 @@ export default function Navbar() {
               </button>
 
               {userMenuOpen ? (
-                <div className="absolute right-0 mt-2 w-40 rounded-md bg-white shadow-lg">
+                <div className="absolute right-0 mt-2 w-48 rounded-xl border border-slate-800 bg-[#0f0f11] p-1 shadow-lg text-sm text-slate-300 z-50">
+                  <a
+                    href="#dashboard"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="block rounded-lg px-4 py-2.5 hover:bg-slate-800 hover:text-white transition"
+                  >
+                    Go to Dashboard
+                  </a>
                   <button
-                    className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                    className="block w-full text-left px-4 py-2.5 hover:bg-slate-800 hover:text-rose-300 text-rose-400 font-medium transition"
                     onClick={() => {
                       localStorage.removeItem('assetflow_token')
                       window.dispatchEvent(new Event('assetflow-auth'))
                       setUser(null)
                       setUserMenuOpen(false)
+                      window.location.hash = ''
                     }}
                   >
                     Logout
@@ -122,7 +130,7 @@ export default function Navbar() {
             </div>
           ) : (
             <a
-              href="/login"
+              href="#auth"
               className="hidden rounded-full bg-ink px-4 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90 sm:inline-block"
             >
               Launch Dashboard
@@ -164,7 +172,7 @@ export default function Navbar() {
               ))}
               <li>
                 <a
-                  href="/login"
+                  href="#auth"
                   onClick={() => setOpen(false)}
                   className="mt-1 block rounded-xl bg-ink px-4 py-3 text-center text-sm font-medium text-bg"
                 >

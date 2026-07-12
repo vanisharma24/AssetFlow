@@ -90,13 +90,15 @@ router.post('/', async (req: Request, res: Response) => {
   }
 })
 
-// POST /api/transfers/:id/approve - Approve a transfer request
-router.post('/:id/approve', async (req: Request, res: Response) => {
-  const id = req.params.id as string
-  const { approvedBy } = req.body
+import { authenticateJWT, AuthenticatedRequest } from '../middleware/auth'
 
-  if (!approvedBy) {
-    res.status(400).json({ error: 'approvedBy (User ID) is required to approve the transfer' })
+// POST /api/transfers/:id/approve - Approve a transfer request (Admin/AssetManager/DepartmentHead only)
+router.post('/:id/approve', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+  const id = req.params.id as string
+  const approvedBy = req.user?.sub
+
+  if (req.user?.role !== 'Admin' && req.user?.role !== 'AssetManager' && req.user?.role !== 'DepartmentHead') {
+    res.status(403).json({ error: 'Forbidden: Requires Admin, AssetManager, or DepartmentHead role.' })
     return
   }
 
