@@ -34,6 +34,8 @@ export const metadata: Metadata = {
     "Management",
   ],
   themeColor: "#FFFFFF",
+  title: "AssetFlow - Asset Tracking & Resource Booking",
+  description: "Operations dashboard for tracking asset health, allocations, transfers and resource booking.",
 };
 
 export default function RootLayout({
