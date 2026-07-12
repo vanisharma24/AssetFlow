@@ -12,6 +12,7 @@ import transfersRouter from './routes/transfers'
 import bookingsRouter from './routes/bookings'
 import authRoutes from './routes/auth.routes'
 import dashboardRouter from './routes/dashboard'
+import maintenancesRouter from './routes/maintenances'
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env.local') })
 
@@ -31,6 +32,7 @@ app.use('/api/allocations', allocationsRouter)
 app.use('/api/transfers', transfersRouter)
 app.use('/api/bookings', bookingsRouter)
 app.use('/api/dashboard', dashboardRouter)
+app.use('/api/maintenances', maintenancesRouter)
 
 app.get('/api/health', async (req, res) => {
   try {
