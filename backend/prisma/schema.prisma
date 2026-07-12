@@ -1,0 +1,225 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                  String            @id @default(uuid())
+  name                String
+  email               String            @unique
+  passwordHash        String
+  departmentId        String?
+  department          Department?       @relation(fields: [departmentId], references: [id])
+  role                Role              @default(Employee)
+  status              String            // e.g., Active, Inactive
+  allocations         Allocation[]
+  bookings            Booking[]
+  raisedMaintenances  MaintenanceReq[]  @relation("RaisedMaintenances")
+  approvedMaintenances MaintenanceReq[] @relation("ApprovedMaintenances")
+  auditAssignments    AuditAssignment[]
+  notifications       Notification[]
+  activityLogs        ActivityLog[]
+}
+
+enum Role {
+  Admin
+  AssetManager
+  DepartmentHead
+  Employee
+}
+
+model Department {
+  id                 String       @id @default(uuid())
+  name               String
+  headUserId         String?
+  parentDepartmentId String?
+  status             String       // e.g., Active, Inactive
+  users              User[]
+  auditCycles        AuditCycle[]
+  allocations        Allocation[]
+}
+
+model AssetCategory {
+  id           String  @id @default(uuid())
+  name         String
+  customFields Json?   // custom fields JSON
+  assets       Asset[]
+}
+
+model Asset {
+  id               String         @id @default(uuid())
+  assetTag         String         @unique // auto-generated AF-0001, sequential
+  name             String
+  categoryId       String
+  category         AssetCategory  @relation(fields: [categoryId], references: [id])
+  serialNumber     String?
+  acquisitionDate  DateTime
+  acquisitionCost  Decimal
+  condition        String
+  location         String
+  isBookable       Boolean        @default(false)
+  status           AssetStatus    @default(Available)
+  allocations      Allocation[]
+  bookings         Booking[]
+  maintenances     MaintenanceReq[]
+  findings         AuditFinding[]
+}
+
+enum AssetStatus {
+  Available
+  Allocated
+  Reserved
+  Under_Maintenance @map("Under Maintenance")
+  Lost
+  Retired
+  Disposed
+}
+
+model Allocation {
+  id                   String           @id @default(uuid())
+  assetId              String
+  asset                Asset            @relation(fields: [assetId], references: [id])
+  holderType           String           // Employee or Department
+  holderId             String           // User ID or Department ID
+  employeeId           String?
+  employee             User?            @relation(fields: [employeeId], references: [id])
+  departmentId         String?
+  department           Department?      @relation(fields: [departmentId], references: [id])
+  allocatedAt          DateTime         @default(now())
+  expectedReturnDate   DateTime
+  returnedAt           DateTime?
+  returnConditionNotes String?
+  status               AllocationStatus @default(Active)
+}
+
+enum AllocationStatus {
+  Active
+  Returned
+  Overdue
+}
+
+model TransferRequest {
+  id           String         @id @default(uuid())
+  assetId      String
+  fromHolderId String
+  toHolderId   String
+  requestedBy  String
+  status       TransferStatus @default(Requested)
+  approvedBy   String?
+  approvedAt   DateTime?
+}
+
+enum TransferStatus {
+  Requested
+  Approved
+  Rejected
+  Reallocated
+}
+
+model Booking {
+  id        String        @id @default(uuid())
+  assetId   String
+  asset     Asset         @relation(fields: [assetId], references: [id])
+  bookedBy  String
+  user      User          @relation(fields: [bookedBy], references: [id])
+  startTime DateTime
+  endTime   DateTime
+  status    BookingStatus @default(Upcoming)
+}
+
+enum BookingStatus {
+  Upcoming
+  Ongoing
+  Completed
+  Cancelled
+}
+
+model MaintenanceReq {
+  id               String            @id @default(uuid())
+  assetId          String
+  asset            Asset             @relation(fields: [assetId], references: [id])
+  raisedBy         String
+  raiser           User              @relation("RaisedMaintenances", fields: [raisedBy], references: [id])
+  issueDescription String
+  priority         String            // Low, Medium, High, Critical
+  photoUrl         String?
+  status           MaintenanceStatus @default(Pending)
+  approvedBy       String?
+  approver         User?             @relation("ApprovedMaintenances", fields: [approvedBy], references: [id])
+  technicianId     String?
+}
+
+enum MaintenanceStatus {
+  Pending
+  Approved
+  Rejected
+  TechnicianAssigned
+  InProgress
+  Resolved
+}
+
+model AuditCycle {
+  id                String            @id @default(uuid())
+  scopeDepartmentId String?
+  department        Department?       @relation(fields: [scopeDepartmentId], references: [id])
+  scopeLocation     String?
+  startDate         DateTime
+  endDate           DateTime
+  status            AuditCycleStatus  @default(Planned)
+  closedAt          DateTime?
+  assignments       AuditAssignment[]
+  findings          AuditFinding[]
+}
+
+enum AuditCycleStatus {
+  Planned
+  InProgress
+  Closed
+}
+
+model AuditAssignment {
+  id            String     @id @default(uuid())
+  auditCycleId  String
+  auditCycle    AuditCycle @relation(fields: [auditCycleId], references: [id])
+  auditorUserId String
+  auditor       User       @relation(fields: [auditorUserId], references: [id])
+}
+
+model AuditFinding {
+  id           String             @id @default(uuid())
+  auditCycleId String
+  auditCycle   AuditCycle         @relation(fields: [auditCycleId], references: [id])
+  assetId      String
+  asset        Asset              @relation(fields: [assetId], references: [id])
+  result       AuditFindingResult
+  notes        String?
+}
+
+enum AuditFindingResult {
+  Verified
+  Missing
+  Damaged
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  actorUserId String
+  user        User     @relation(fields: [actorUserId], references: [id])
+  action      String
+  entityType  String
+  entityId    String
+  timestamp   DateTime @default(now())
+}
