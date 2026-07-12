@@ -1,109 +1,93 @@
-from flask import Flask, request, jsonify
+"""
+app.py — Flask application factory and server entry point.
+
+Run with:
+    python app.py                   # development
+    gunicorn app:create_app()       # production
+
+Environment variables are read from .env (see .env.example).
+"""
+
+import sys
+
+from flask import Flask
 from flask_cors import CORS
-import requests
 
-app = Flask(__name__)
-CORS(app)  # Allow all origins for development
+from config import Config
+from chatbot.routes import chatbot_bp
+from chatbot.logger import get_logger
+from middleware.error_handlers import register_error_handlers
 
-# ---------- GROQ API SETUP ----------
-# Get your FREE API key from: https://console.groq.com/keys
-GROQ_API_KEY = "gsk_your_actual_groq_api_key_here"  # <-- REPLACE WITH YOUR ACTUAL KEY
+log = get_logger("assetflow.chatbot")
 
-# Groq API endpoint
-GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
-# Available free models:
-# - "mixtral-8x7b-32768" (best performance)
-# - "llama3-70b-8192" (great for general chat)
-# - "gemma2-9b-it" (fast and capable)
-# - "llama3-8b-8192" (fastest)
-# - "llama-3.1-70b-versatile" (latest)
+def create_app() -> Flask:
+    """
+    Application factory.
 
-MODEL = "mixtral-8x7b-32768"  # Change to any model you prefer
-
-# System prompt to set the bot's personality
-SYSTEM_PROMPT = """You are a helpful, friendly, and knowledgeable AI assistant. 
-You respond in a conversational tone and provide accurate, useful information. 
-Keep responses concise but informative. If you don't know something, be honest about it."""
-
-# ---------- ROUTES ----------
-@app.route('/chat', methods=['POST'])
-def chat():
+    Returns a fully configured Flask app instance. Using a factory makes the
+    app testable (each test can create its own isolated instance) and
+    compatible with WSGI servers like Gunicorn or uWSGI.
+    """
+    # ── Validate config before anything else ─────────────────────────────────
     try:
-        # Get the user message from the request
-        data = request.get_json()
-        if not data or 'message' not in data:
-            return jsonify({'error': 'Missing message'}), 400
-        
-        user_message = data['message']
-        
-        # Headers for Groq API
-        headers = {
-            "Authorization": f"Bearer {GROQ_API_KEY}",
-            "Content-Type": "application/json"
-        }
-        
-        # Request payload
-        payload = {
-            "model": MODEL,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message}
-            ],
-            "temperature": 0.7,
-            "max_tokens": 1024,
-            "top_p": 1,
-            "stream": False
-        }
-        
-        # Make request to Groq API
-        response = requests.post(GROQ_API_URL, headers=headers, json=payload)
-        
-        # Check if request was successful
-        if response.status_code == 200:
-            result = response.json()
-            reply = result['choices'][0]['message']['content']
-            return jsonify({'reply': reply})
-        else:
-            # Handle API errors
-            error_msg = response.json().get('error', {}).get('message', 'Unknown error')
-            return jsonify({'reply': f"⚠️ API Error: {error_msg}"}), response.status_code
-            
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        return jsonify({'reply': f"⚠️ Error: {str(e)}"}), 500
+        Config.validate()
+    except EnvironmentError as exc:
+        log.error(f"Configuration error: {exc}")
+        sys.exit(1)
 
-@app.route('/health', methods=['GET'])
-def health():
-    """Health check endpoint"""
-    return jsonify({
-        'status': 'healthy',
-        'model': MODEL,
-        'api_key_set': bool(GROQ_API_KEY)
-    })
+    # ── Create app ────────────────────────────────────────────────────────────
+    app = Flask(__name__)
 
-# ---------- OPTIONAL: Add a root route to avoid 404 ----------
-@app.route('/', methods=['GET'])
-def home():
-    return jsonify({
-        'message': '🚀 Groq AI Chatbot Server is running!',
-        'endpoints': {
-            '/health': 'GET - Check server status',
-            '/chat': 'POST - Send a message to the AI'
-        },
-        'example': {
-            'POST /chat': {
-                'body': {'message': 'Hello, how are you?'}
+    # ── CORS ──────────────────────────────────────────────────────────────────
+    CORS(
+        app,
+        origins=Config.ALLOWED_ORIGINS,
+        methods=["GET", "POST", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization"],
+        supports_credentials=False,
+    )
+
+    # ── Register blueprint ────────────────────────────────────────────────────
+    app.register_blueprint(chatbot_bp)
+
+    # ── Register error handlers ───────────────────────────────────────────────
+    register_error_handlers(app)
+
+    # ── Root info route ───────────────────────────────────────────────────────
+    @app.get("/")
+    def index():
+        from flask import jsonify
+        return jsonify(
+            {
+                "service": "AssetFlow Chatbot API",
+                "version": "1.0.0",
+                "endpoints": {
+                    "POST   /api/chat":                   "Send a message, receive an AI reply",
+                    "DELETE /api/chat/<session_id>":      "Clear conversation history",
+                    "GET    /api/health":                 "Liveness check",
+                    "GET    /api/session/<session_id>":   "Session metadata (debug)",
+                },
             }
-        }
-    })
+        )
 
-if __name__ == '__main__':
-    print("🚀 Groq AI Chatbot Server Running!")
-    print(f"📡 Using model: {MODEL}")
-    print(f"🔑 API Key: {GROQ_API_KEY[:15]}... (first 15 chars)")
-    print("🌐 Server: http://127.0.0.1:5000")
-    print("📍 Health check: http://127.0.0.1:5000/health")
-    print("💬 Chat endpoint: http://127.0.0.1:5000/chat (POST)")
-    print("🏠 Home: http://127.0.0.1:5000/")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    log.info(
+        f"AssetFlow Chatbot API ready — "
+        f"model={Config.GROQ_MODEL}  "
+        f"port={Config.PORT}  "
+        f"debug={Config.DEBUG}  "
+        f"allowed_origins={Config.ALLOWED_ORIGINS}"
+    )
+
+    return app
+
+
+# ─── Dev server entry point ───────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    flask_app = create_app()
+    flask_app.run(
+        host="0.0.0.0",
+        port=Config.PORT,
+        debug=Config.DEBUG,
+    )

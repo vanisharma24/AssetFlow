@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { FloatingChatWidget } from "@/components/ui/floating-chat-widget-shadcnui";
 import "./globals.css";
 
 const geist = Geist({
@@ -52,6 +53,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-background font-sans text-foreground">
         {children}
+        <FloatingChatWidget />
       </body>
     </html>
   );
