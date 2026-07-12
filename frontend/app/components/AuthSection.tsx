@@ -8,7 +8,7 @@ type Mode = 'signup' | 'signin'
 
 export default function AuthSection() {
   const [mode, setMode] = useState<Mode>('signin') // default to signin for convenience
-  const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'Employee' })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
@@ -21,7 +21,7 @@ export default function AuthSection() {
       const endpoint = mode === 'signup' ? '/api/auth/signup' : '/api/auth/login'
       const body =
         mode === 'signup'
-          ? { name: form.name, email: form.email, password: form.password }
+          ? { name: form.name, email: form.email, password: form.password, role: form.role }
           : { email: form.email, password: form.password }
 
       const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -43,7 +43,7 @@ export default function AuthSection() {
       } catch (e) {
         /* ignore */
       }
-      setForm({ name: '', email: '', password: '' })
+      setForm({ name: '', email: '', password: '', role: 'Employee' })
     } catch (error) {
       setMessage({
         type: 'error',
@@ -96,16 +96,32 @@ export default function AuthSection() {
 
         <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
           {mode === 'signup' && (
-            <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">Full name</label>
-              <input
-                required
-                value={form.name}
-                onChange={(event) => setForm({ ...form, name: event.target.value })}
-                className="w-full rounded-xl border border-slate-800 bg-[#161619] px-4 py-2.5 text-white outline-none focus:border-emerald-500/50 transition text-sm"
-                placeholder="Jane Doe"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">Full name</label>
+                <input
+                  required
+                  value={form.name}
+                  onChange={(event) => setForm({ ...form, name: event.target.value })}
+                  className="w-full rounded-xl border border-slate-800 bg-[#161619] px-4 py-2.5 text-white outline-none focus:border-emerald-500/50 transition text-sm"
+                  placeholder="Jane Doe"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">System Role</label>
+                <select
+                  value={form.role}
+                  onChange={(event) => setForm({ ...form, role: event.target.value })}
+                  className="w-full rounded-xl border border-slate-800 bg-[#161619] px-4 py-2.5 text-white outline-none focus:border-emerald-500/50 transition text-sm"
+                >
+                  <option value="Employee">Employee</option>
+                  <option value="DepartmentHead">Department Head</option>
+                  <option value="AssetManager">Asset Manager</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+            </>
           )}
 
           <div>

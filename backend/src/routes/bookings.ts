@@ -48,9 +48,12 @@ router.get('/', async (req: Request, res: Response) => {
   }
 })
 
+import { authenticateJWT, AuthenticatedRequest } from '../middleware/auth'
+
 // POST /api/bookings - Create a new booking with overlap validation
-router.post('/', async (req: Request, res: Response) => {
-  const { assetId, bookedBy, startTime, endTime } = req.body
+router.post('/', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+  const { assetId, startTime, endTime } = req.body
+  const bookedBy = req.body.bookedBy || req.user?.sub
 
   if (!assetId || !bookedBy || !startTime || !endTime) {
     res.status(400).json({ error: 'Required fields: assetId, bookedBy, startTime, endTime' })

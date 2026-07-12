@@ -6,13 +6,19 @@ const router = express.Router()
 
 router.post('/signup', async (req, res) => {
   try {
-    const { name, email, password } = req.body
+    const { name, email, password, role } = req.body
 
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
         message: 'Name, email, and password are required',
       })
+    }
+
+    const validRoles = ['Admin', 'AssetManager', 'DepartmentHead', 'Employee']
+    let userRole: any = 'Employee'
+    if (role && validRoles.includes(role)) {
+      userRole = role
     }
 
     const existingUser = await db.user.findUnique({ where: { email } })
@@ -31,6 +37,7 @@ router.post('/signup', async (req, res) => {
         name,
         email,
         passwordHash,
+        role: userRole,
         status: 'Active',
       },
     })
