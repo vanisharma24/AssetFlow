@@ -167,8 +167,8 @@ Contributions are welcome! To fix a bug or add a feature:
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/DEEPTANSHU-HANDLE">
-        <img src="https://github.com/DEEPTANSHU-HANDLE.png" width="100" alt="Deeptanshu Kumar"/><br/>
+      <a href="https://github.com/deeptanshusingh2">
+        <img src="https://github.com/deeptanshusingh2.png" width="100" alt="Deeptanshu Kumar"/><br/>
         <sub><b>Deeptanshu Kumar</b></sub>
       </a>
     </td>
